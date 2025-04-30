@@ -13,5 +13,18 @@ CHIP PC {
     OUT out[16];
     
     PARTS:
-    //// Replace this comment with your code.
+    And16(a=false, b=false, out=zero); // reset時の入力値
+    Inc16(in=outPrev, out=incremented); // inc時の入力値
+
+    // 入力値の決定
+    Mux16(a=outPrev, b=incremented, sel=inc, out=in0);
+    Mux16(a=in0, b=in, sel=load, out=in1);
+    Mux16(a=in1, b=zero, sel=reset, out=in2);
+
+    // Registerにloadするかどうかを決定
+    Or(a=reset, b=load, out=load0);
+    Or(a=inc, b=load0, out=load1);
+
+    Register(in=in2, load=load1, out=outPrev);
+    And16(a=outPrev, b=true, out=out);
 }
