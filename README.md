@@ -29,5 +29,5 @@
 ## IDE
 ### ローカルファイルへのアクセス
 実装結果をテストするときに、IDEからローカルファイルにアクセスする必要があるが、FirefoxやSafariではローカルファイルにアクセスできない。
-この理由は、[ローカルファイルを選択するウィンドウにshowDirectoryPicker()を使っていて、それらのブラウザでは実装されていないから](https://github.com/nand2tetris/web-ide/issues/560#issuecomment-2654768606)らしい。
+この理由は、[ローカルファイルを選択する機能にshowDirectoryPicker()というメソッドを使っていて、このメソッドはFirefoxやSafariでは未実装であるから](https://github.com/nand2tetris/web-ide/issues/560#issuecomment-2654768606)らしい。
 ChromeやEdgeであれば、ローカルファイルにアクセス可（2025年4月28日時点）。
