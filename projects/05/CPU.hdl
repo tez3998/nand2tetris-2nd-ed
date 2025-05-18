@@ -31,5 +31,64 @@ CHIP CPU {
         pc[15];          // address of next instruction
 
     PARTS:
-	//// Replace this comment with your code.
+    // inscructionの各bitに別名を定義
+    // A命令 or C命令
+    And(a=instruction[15], b=true, out=isCInstruction); // C命令でであることを示すフラグ
+    Not(in=isCInstruction, out=isAInstruction); // A命令でであることを示すフラグ
+    // ジャンプ
+    And(a=instruction[0], b=isCInstruction, out=j0);
+    And(a=instruction[1], b=isCInstruction, out=j1);
+    And(a=instruction[2], b=isCInstruction, out=j2);
+    // dest
+    And(a=instruction[3], b=isCInstruction, out=isDestM); // destにMが含まれることを示すフラグ
+    And(a=instruction[4], b=isCInstruction, out=isDestD); // destにDが含まれることを示すフラグ
+    And(a=instruction[5], b=isCInstruction, out=isDestA); // destにAが含まれることを示すフラグ
+    // comp関連
+    And(a=instruction[12], b=isCInstruction, out=useM); // compの項にM（RAM[A）が含まれることを示すフラグ
+    And(a=instruction[11], b=isCInstruction, out=zx);
+    And(a=instruction[10], b=isCInstruction, out=nx);
+    And(a=instruction[9], b=isCInstruction, out=zy);
+    And(a=instruction[8], b=isCInstruction, out=ny);
+    And(a=instruction[7], b=isCInstruction, out=f);
+    And(a=instruction[6], b=isCInstruction, out=no);
+
+    // Aレジスタ
+    Mux16(a=outALU, b=instruction, sel=isAInstruction, out=inA);
+    Or(a=isAInstruction, b=isDestA, out=storeToA);
+    ARegister(in=inA, load=storeToA, out=outA);
+    And16(a=outA, b=true, out[0..14]=addressM);
+
+    // Dレジスタ
+    DRegister(in=outALU, load=isDestD, out=outD);
+
+    // ALU
+    Mux16(a=outA, b=inM, sel=useM, out=outAM);
+    ALU(x=outD, y=outAM, zx=zx, nx=nx, zy=zy, ny=ny, f=f, no=no, out=outALU, zr=zr, ng=ng);
+    And16(a=outALU, b=true, out=outM);
+    And(a=isDestM, b=isCInstruction, out=writeM);
+
+    // 以降、PC関連の処理
+    Or(a=ng, b=zr, out=notPg);
+    Not(in=notPg, out=pg); // 出力が1以上であることを示すフラグ
+
+    // ジャンプの条件がある場合、条件を満たしているかを判定
+    // j0, j1, j2はそれぞれ順に>0（pg）, =0（zr）, <0（ng）という条件に対応
+    And(a=j0, b=pg, out=matched0);
+    And(a=j1, b=zr, out=matched1);
+    And(a=j2, b=ng, out=matched2);
+    Or(a=matched0, b=matched1, out=matched01);
+    Or(a=matched01, b=matched2, out=matchedCond);
+
+    // 無条件ジャンプかを判定
+    And(a=j0, b=j1, out=j01);
+    And(a=j01, b=j2, out=mustJump);
+
+    // ジャンプするかを判定
+    Or(a=matchedCond, b=mustJump, out=doJump);
+
+    // PCをインクリメントするかを判定
+    Not(in=doJump, out=doInc);
+
+    // TODO: jumpするかどうかもloadに関わる
+    PC(in=outA, load=doJump, inc=doInc, reset=reset, out[0..14]=pc);
 }
