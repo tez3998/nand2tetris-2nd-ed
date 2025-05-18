@@ -24,5 +24,22 @@ CHIP Memory {
     OUT out[16];
 
     PARTS:
-	//// Replace this comment with your code.
+    // 入力の選択
+    // RAM16Kに入力するかを判定
+    Not(in=address[14], out=not14);
+    And(a=not14, b=load, out=rLoad);
+
+    // Screenに入力するかを選択
+    Not(in=address[13], out=not13);
+    And(a=not13, b=address[14], out=n13a14);
+    And(a=n13a14, b=load, out=sLoad);
+
+    // 入出力
+	RAM16K(in=in, load=rLoad, address=address[0..13], out=rOut);
+    Screen(in=in, load=sLoad, address=address[0..12], out=sOut);
+    Keyboard(out=kOut);
+
+    // 出力の選択
+    Mux16(a=sOut, b=kOut, sel=address[13], out=skOut);
+    Mux16(a=rOut, b=skOut, sel=address[14], out=out);
 }
