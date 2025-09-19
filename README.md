@@ -47,8 +47,8 @@ Web版IDEでMemoryをテストすると、次のメッセージが表示され�
 Before you run this script, select the 'Screen' option from the 'View' menu
 ```
 
-しかしWeb版IDEには「View」メニューが存在しないため、先に進めない。
-また「Screen」は Memory.hdl を選択した時点で表示される（ただし、ウィンドウが小さいと非表示になる）。
+しかし、Web版IDEには「View」メニューが存在しないため、先に進めない。
+また、「Screen」は Memory.hdl を選択した時点で表示される（ただし、ウィンドウが小さいと非表示になる）。
 
 #### 解決方法
 デスクトップ版IDEを使えば、テストが止まらずに進む。
