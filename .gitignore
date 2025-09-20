@@ -6,3 +6,6 @@
 
 # Python
 *__pycache__/
+
+# 各課題
+projects/06/**/*.hack
