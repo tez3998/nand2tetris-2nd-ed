@@ -35,6 +35,7 @@ class Parser:
     def advance(self) -> None:
         self.__reset()
         line = self.__file.readline()
+        print(line)
         line = line.strip('\n')
         line = line.strip()
 
@@ -57,22 +58,16 @@ class Parser:
                 end = line.find('=')
                 self.__dest = line[pos:end]
                 pos = end+1
-            else:
-                self.__dest == 'null'
             
             for ci, ch in enumerate(line[pos:]):
                 if ch == ';':
-                    self.__jump = re.split(r'[/ \t]', line[ci+1:], maxsplit=1)
+                    self.__jump = re.split(r'[/ \t]', line[ci+1:], maxsplit=1)[0]
                     break
                 
                 if ch in [' ', '\t', '/']:
-                    self.__jump = 'null'
                     break
 
                 self.__comp += ch
-            
-            if not self.__jump:
-                self.__jump = 'null'
 
     def instruction_type(self) -> Type:
         return self.__type
@@ -92,9 +87,9 @@ class Parser:
     def __reset(self) -> None:
         self.__type = -1
         self.__symbol = ''
-        self.__dest = ''
+        self.__dest = 'null'
         self.__comp = ''
-        self.__jump = ''
+        self.__jump = 'null'
     
     def __has_dest(self, line, start=0) -> bool:
         COMP_TERMINATORS = [' ', '\t', ';', '/'] # compの終わりを示す字
