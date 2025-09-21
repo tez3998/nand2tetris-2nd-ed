@@ -32,7 +32,7 @@
    M=D
    // decrements n and loops
    @n
-   MD=M-1
+   DM=M-1
    @LOOP
    D;JGT
 (END)
