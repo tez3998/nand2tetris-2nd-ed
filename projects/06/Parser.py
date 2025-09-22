@@ -19,7 +19,6 @@ class Parser:
             if len(line) == 0: # EOFに到達した場合
                 return False
             
-            # 末尾の改行と前後のスペースを除去して
             line = line.rstrip('\n')
             line = line.strip()
             
@@ -35,7 +34,6 @@ class Parser:
     def advance(self) -> None:
         self.__reset()
         line = self.__file.readline()
-        print(line)
         line = line.strip('\n')
         line = line.strip()
 
@@ -46,9 +44,12 @@ class Parser:
         if line[0] == '@': # A命令の場合
             self.__type = Type.A_INSTRUCTION
             for c in line[1:]:
-                if not c.isdigit():
+                if c in [' ', '\t', '/']:
                     break
                 self.__symbol += c
+            return
+        elif line[0] == '(': # ラベルシンボルの場合
+            self.__type = Type.L_INSTRUCTION
             return
         else: # C命令の場合
             self.__type = Type.C_INSTRUCTION
